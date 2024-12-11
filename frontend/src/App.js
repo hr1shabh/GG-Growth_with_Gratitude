@@ -8,10 +8,12 @@ import RightBar from './components/rightBar/rightBar.jsx';
 import Home from './pages/home/home.jsx';
 import Profile from './pages/profile/profile.jsx';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from './context/authContext.js';
 
 function App() {
 
-  const currentUser = true;
+  const { currentUser } = useAuth();
+  // const currentUser = true;
   const Layout = () => {
     return (
       <div className="min-h-screen flex flex-col">
