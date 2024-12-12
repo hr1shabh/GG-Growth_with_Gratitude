@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/authContext';
+import Posts from '../../components/posts/posts';
 const Profile = () => {
     //current user will be replaced with the user from the database
     const { currentUser } = useAuth();
@@ -39,7 +40,8 @@ const Profile = () => {
     
           {/* Posts Section */}
           <div className="mt-6 p-4">
-            <h1 className="text-xl font-semibold">Posts</h1>
+            {/* <h1 className="text-xl font-semibold">Posts</h1> */}
+            <Posts />
             {/* Add posts content here */}
           </div>
         </div>
