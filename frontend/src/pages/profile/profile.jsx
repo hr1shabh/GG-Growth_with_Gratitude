@@ -1,11 +1,13 @@
 import React from 'react';
 import { useAuth } from '../../context/authContext';
 import Posts from '../../components/posts/posts';
+import CreatePost from '../../components/createPost/createPost';
 const Profile = () => {
     //current user will be replaced with the user from the database
     const { currentUser } = useAuth();
     const backgroundImage = "https://plus.unsplash.com/premium_photo-1682092961192-3ec38c7c8e88?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z3JhdGl0dWRlfGVufDB8fDB8fHww";
     return (
+
         <div className="relative w-full max-w-md mx-auto">
           {/* Background Image */}
           <div className="w-full h-48 overflow-hidden">
@@ -41,6 +43,7 @@ const Profile = () => {
           {/* Posts Section */}
           <div className="mt-6 p-4">
             {/* <h1 className="text-xl font-semibold">Posts</h1> */}
+            {/* <CreatePost /> */}
             <Posts />
             {/* Add posts content here */}
           </div>
