@@ -1,1 +1,7 @@
 node_modules/
+backend/venv/
+backend/db.sqlite3
+backend/.env
+frontend/.env
+.DS_Store
+frontend/node_modules/
