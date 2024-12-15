@@ -16,17 +16,17 @@ function App() {
   // const currentUser = true;
   const Layout = () => {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex flex-1">
-          <main className="flex-grow">
-            <Outlet />
-          </main>
-          <aside className="w-64 sticky top-0 h-screen overflow-y-auto bg-white shadow-lg">
-            <RightBar />
-          </aside>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex flex-1">
+        <main className="flex-grow">
+          <Outlet />
+        </main>
+        <aside className="w-64 sticky top-0 h-screen overflow-y-auto bg-white shadow-lg mr-4">
+          <RightBar />
+        </aside>
       </div>
+    </div>
     )
   }
 
