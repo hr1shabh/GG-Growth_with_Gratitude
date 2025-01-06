@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticated
 
@@ -61,3 +61,21 @@ class CommentListCreateView(APIView):
             serializer.save(user=request.user, post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        """Like a post."""
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the user already liked the post
+        if Like.objects.filter(user=request.user, post=post).exists():
+            return Response({'message': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new like
+        Like.objects.create(user=request.user, post=post)
+        return Response({'message': 'Post liked'}, status=status.HTTP_201_CREATED)
