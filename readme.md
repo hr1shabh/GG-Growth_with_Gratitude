@@ -91,3 +91,8 @@ DELETE /api/posts/<post_id>/like/
 3. Get Likes Count for a Post
 
 GET /api/posts/<post_id>/like/
+
+
+---
+
+![alt text](<Screenshot 2025-01-07 at 11.40.21 PM.png>)
