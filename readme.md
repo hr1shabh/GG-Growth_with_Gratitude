@@ -95,4 +95,4 @@ GET /api/posts/<post_id>/like/
 
 ---
 
-![alt text](<Screenshot 2025-01-07 at 11.40.21 PM.png>)
+![alt text](basic_flow.png)
