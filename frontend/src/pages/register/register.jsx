@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/authContext';
 
 const Register = () => {
+
+    const { register } = useAuth();
+    const handleregister = () => {
+        register();
+    }
+
   return (
     <div className="flex min-h-screen bg-gray-100 flex-row-reverse">
       <div className="w-1/2 bg-white p-12 flex flex-col justify-center">
@@ -38,6 +45,7 @@ const Register = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button 
+              onClick={handleregister}
               type='submit' 
               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105"
             >

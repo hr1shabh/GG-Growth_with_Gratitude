@@ -6,14 +6,13 @@
 
 1. User Registration
 
-POST /api/register/
+POST api/users/register/
 
 {
-    "username": "testuser",
-    "email": "testuser@example.com",
-    "password": "password123"
+  "email": "user@example.com",
+  "password": "securepassword123",
+  "profile": "Optional profile text"
 }
-
 
 2. Token Generation (Login)
 
@@ -36,7 +35,11 @@ POST /api/token/refresh/
 
 4. User Profile
 
-GET /api/user/
+GET /api/users/profile/
+
+Headers:
+
+Authorization: Bearer <access_token>
 
 --- 
 
