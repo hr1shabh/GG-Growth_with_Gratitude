@@ -13,6 +13,9 @@ from rest_framework.permissions import AllowAny
 def register_user(request):
     print(request.data)  # Debugging: Print the incoming request data
     serializer = UserSerializer(data=request.data)
+    # print(request.data)
+    # serializer.profile = request.data['username']
+    print(serializer)
     if serializer.is_valid():
         print("Serializer is valid.")  # Debugging step
         user = serializer.save()
