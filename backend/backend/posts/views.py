@@ -5,9 +5,13 @@ from rest_framework.response import Response
 from .models import Post, Comment, Like
 from .serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
 def post_list(request):
     if request.method == 'GET':
         posts = Post.objects.all()
@@ -15,7 +19,11 @@ def post_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = PostSerializer(data=request.data)
+        # Add the authenticated user to the request data
+        data = request.data.copy()
+        data['user'] = request.user.id  # Associate the authenticated user
+
+        serializer = PostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

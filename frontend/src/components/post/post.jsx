@@ -6,6 +6,11 @@ import Comments from '../comments/comments';
 const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isCommented, setIsCommented] = useState(false);
+
+  if (!post) {
+    return <div>No post data available</div>;
+  }
+
   const handleLikeToggle = () => {
     setIsLiked(!isLiked);
   };
@@ -14,36 +19,48 @@ const Post = ({ post }) => {
     setIsCommented(!isCommented);
   };
 
+  // Get user's email initial safely
+  const getInitial = (email) => {
+    return email && typeof email === 'string' ? email[0].toUpperCase() : '?';
+  };
+
+  // Format the date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-md mx-auto my-4 border border-gray-200">
       {/* Post Header */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <Link 
-            to={`/profile/${post.userId}`} 
+            to={`/profile/${post.user}`} 
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
           >
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
-              {post.name[0].toUpperCase()}
+              {getInitial(post.user)}
             </div>
             <div>
-              <span className="font-semibold text-gray-800">{post.name}</span>
+              <span className="font-semibold text-gray-800">{post.user}</span>
             </div>
           </Link>
-          <span className="text-sm text-gray-500">{post.date}</span>
+          <span className="text-sm text-gray-500">{formatDate(post.created_at)}</span>
         </div>
       </div>
       
       {/* Post Content */}
       <div className="p-4 bg-gray-50">
         <div className="space-y-2 text-gray-700">
-          {[post.Gratitudepoint1, post.Gratitudepoint2, post.Gratitudepoint3].map((point, index) => (
-            <p 
-              key={index}
-              className="before:content-['\201C'] before:text-gray-400 before:text-3xl before:mr-1 
-                          after:content-['\201D'] after:text-gray-400 after:text-3xl after:ml-1"
-            >
-              {point}
+          {post.content.split('\n').map((sentence, index) => (
+            <p key={index} className="text-base leading-relaxed">
+              {sentence.trim()}
             </p>
           ))}
         </div>
@@ -84,7 +101,7 @@ const Post = ({ post }) => {
       {/* Comments Section */}
       {isCommented && (
         <div className="p-4 border-t border-gray-100">
-          <Comments comments={post.comments} />
+          <Comments postId={post.id} />
         </div>
       )}
     </div>
