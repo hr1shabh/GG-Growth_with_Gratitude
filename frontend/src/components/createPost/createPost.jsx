@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CreatePost = () => {
+const CreatePost = ({ fetchPosts }) => { // Accept fetchPosts as a prop
     const [points, setPoints] = useState(['', '', '']);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -53,6 +53,9 @@ const CreatePost = () => {
 
             // Reset input fields after successful post creation
             setPoints(['', '', '']);
+
+            // Trigger re-fetch of posts in the Home component
+            fetchPosts();
         } catch (err) {
             setError(err.message);
         } finally {
