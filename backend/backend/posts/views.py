@@ -3,12 +3,12 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Comment, Like
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])  # Ensure the user is authenticated
@@ -57,24 +57,40 @@ class CommentListCreateView(APIView):
 
     def get(self, request, post_id):
         """Retrieve all comments for a specific post."""
-        comments = Comment.objects.filter(post_id=post_id)
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            # Check if the post exists
+            post = get_object_or_404(Post, id=post_id)
+            comments = Comment.objects.filter(post=post)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # Handle unexpected errors
+            return Response(
+                {'error': 'An error occurred while fetching comments.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def post(self, request, post_id):
         """Create a new comment for a specific post."""
-        post = Post.objects.get(id=post_id)
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user, post=post)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            # Check if the post exists
+            post = get_object_or_404(Post, id=post_id)
+            serializer = CommentSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user, post=post)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                # Return validation errors
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Handle unexpected errors
+            return Response(
+                {'error': 'An error occurred while creating the comment.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
-from .models import Post, Like
+
+
 
 class LikePostView(APIView):
     permission_classes = [IsAuthenticated]

@@ -10,7 +10,12 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'user', 'post', 'content', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        extra_kwargs = {
+            'user': {'read_only': True},
+            'post': {'read_only': True},
+        }
+
+
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
