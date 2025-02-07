@@ -70,20 +70,34 @@ class CommentListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from .models import Post, Like
+
 class LikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id):
-        """Like a post."""
-        try:
-            post = Post.objects.get(id=post_id)
-        except Post.DoesNotExist:
-            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+        """Toggle like/unlike a post."""
+        post = get_object_or_404(Post, id=post_id)
 
-        # Check if the user already liked the post
-        if Like.objects.filter(user=request.user, post=post).exists():
-            return Response({'message': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
+        # Check if the user has already liked the post
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
 
-        # Create a new like
-        Like.objects.create(user=request.user, post=post)
-        return Response({'message': 'Post liked'}, status=status.HTTP_201_CREATED)
+        if not created:
+            # If the like already exists, delete it (unlike)
+            like.delete()
+            message = 'Post unliked'
+        else:
+            # If the like was just created, return a liked message
+            message = 'Post liked'
+
+        # Get the updated like count for the post
+        like_count = Like.objects.filter(post=post).count()
+
+        return Response(
+            {'message': message, 'like_count': like_count},
+            status=status.HTTP_200_OK
+        )

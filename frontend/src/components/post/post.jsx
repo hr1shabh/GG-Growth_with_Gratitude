@@ -1,18 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import Comments from '../comments/comments';
 
 const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const [isCommented, setIsCommented] = useState(false);
+
+  // Fetch like status for the current user
+  useEffect(() => {
+    if (!post) return; // Early return if post is not available
+
+    const fetchLikeStatus = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch like status');
+        }
+
+        const data = await response.json();
+        setIsLiked(data.is_liked);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [post]); // Add `post` as a dependency
 
   if (!post) {
     return <div>No post data available</div>;
   }
 
-  const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
+  const handleLikeToggle = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert('Please log in to like posts.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle like');
+      }
+
+      const data = await response.json();
+      setIsLiked(!isLiked);
+      setLikesCount(data.likes_count);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleCommentToggle = () => {
@@ -78,7 +133,7 @@ const Post = ({ post }) => {
               className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'fill-none'}`}
               strokeWidth={2}
             />
-            <span className="text-sm">{isLiked ? 'Liked' : 'Like'}</span>
+            <span className="text-sm">{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>
           </button>
           
           {/* Comment Button */}
