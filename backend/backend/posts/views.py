@@ -11,24 +11,19 @@ from django.shortcuts import get_object_or_404
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
+@permission_classes([IsAuthenticated])
 def post_list(request):
     if request.method == 'GET':
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
-
     elif request.method == 'POST':
-        # Add the authenticated user to the request data
-        data = request.data.copy()
-        data['user'] = request.user.id  # Associate the authenticated user
-
-        serializer = PostSerializer(data=data)
+        serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
+            serializer.save()  # User will be added automatically via create method
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 @api_view(['GET', 'PUT', 'DELETE'])
 def post_detail(request, pk):
     try:

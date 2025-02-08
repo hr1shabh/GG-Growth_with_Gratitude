@@ -94,14 +94,14 @@ const Post = ({ post }) => {
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <Link 
-            to={`/profile/${post.user}`} 
+            to={`/profile/${post.user.id}`} 
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
           >
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
-              {getInitial(post.user)}
+              {getInitial(post.user.email)}
             </div>
             <div>
-              <span className="font-semibold text-gray-800">{post.user}</span>
+              <span className="font-semibold text-gray-800">{post.user.profile}</span>
             </div>
           </Link>
           <span className="text-sm text-gray-500">{formatDate(post.created_at)}</span>
