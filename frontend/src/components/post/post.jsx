@@ -5,7 +5,6 @@ import Comments from '../comments/comments';
 
 const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const [isCommented, setIsCommented] = useState(false);
 
   // Fetch like status for the current user
@@ -29,14 +28,14 @@ const Post = ({ post }) => {
         }
 
         const data = await response.json();
-        setIsLiked(data.is_liked);
+        setIsLiked(data.has_liked); // Updated to match backend response
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching like status:', error);
       }
     };
 
     fetchLikeStatus();
-  }, [post]); // Add `post` as a dependency
+  }, [post]);
 
   if (!post) {
     return <div>No post data available</div>;
@@ -63,10 +62,9 @@ const Post = ({ post }) => {
       }
 
       const data = await response.json();
-      setIsLiked(!isLiked);
-      setLikesCount(data.likes_count);
+      setIsLiked(data.has_liked); // Update state based on backend response
     } catch (error) {
-      console.error(error);
+      console.error('Error toggling like:', error);
     }
   };
 
@@ -133,7 +131,7 @@ const Post = ({ post }) => {
               className={`w-6 h-6 ${isLiked ? 'fill-red-500 text-red-500' : 'fill-none'}`}
               strokeWidth={2}
             />
-            <span className="text-sm">{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>
+            <span className="text-sm">Like</span>
           </button>
           
           {/* Comment Button */}

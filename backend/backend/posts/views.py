@@ -95,25 +95,25 @@ class CommentListCreateView(APIView):
 class LikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, post_id):
-        """Toggle like/unlike a post."""
+    def get(self, request, post_id):
+        """Check if the user has liked the post."""
         post = get_object_or_404(Post, id=post_id)
+        has_liked = Like.objects.filter(user=request.user, post=post).exists()
+        return Response({'has_liked': has_liked}, status=status.HTTP_200_OK)
 
-        # Check if the user has already liked the post
+    def post(self, request, post_id):
+        """Toggle like/unlike a post and return the updated like status."""
+        post = get_object_or_404(Post, id=post_id)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if not created:
             # If the like already exists, delete it (unlike)
             like.delete()
+            has_liked = False
             message = 'Post unliked'
         else:
             # If the like was just created, return a liked message
+            has_liked = True
             message = 'Post liked'
 
-        # Get the updated like count for the post
-        like_count = Like.objects.filter(post=post).count()
-
-        return Response(
-            {'message': message, 'like_count': like_count},
-            status=status.HTTP_200_OK
-        )
+        return Response({'message': message, 'has_liked': has_liked}, status=status.HTTP_200_OK)
