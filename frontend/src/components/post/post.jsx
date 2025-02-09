@@ -101,7 +101,7 @@ const Post = ({ post }) => {
               {getInitial(post.user.email)}
             </div>
             <div>
-              <span className="font-semibold text-gray-800">{post.user.profile}</span>
+              <span className="font-semibold text-gray-800">{post.user.profile ? post.user.profile : post.user.email.split("@")[0]}</span>
             </div>
           </Link>
           <span className="text-sm text-gray-500">{formatDate(post.created_at)}</span>
