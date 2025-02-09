@@ -105,18 +105,16 @@ const Comments = ({ postId }) => {
         >
           <div className="flex items-center p-4 bg-gray-100 border-b border-gray-200">
             {comment.user.profile ? (
-              <img
-                src={comment.user.profile}
-                alt="profile"
-                className="w-12 h-12 rounded-full mr-4 object-cover"
-              />
+              <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+              {getInitials(comment.user.profile)}
+            </div>
             ) : (
               <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
                 {getInitials(comment.user.email)}
               </div>
             )}
             <h2 className="text-lg font-semibold text-gray-800">
-              {comment.user.email.split("@")[0]} {/* Display email prefix as profile name */}
+              {comment.user.profile ? comment.user.profile : comment.user.email.split("@")[0]}
             </h2>
           </div>
           <div className="p-4">
