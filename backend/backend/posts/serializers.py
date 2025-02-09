@@ -8,7 +8,7 @@ User = get_user_model()  # Import the User model from AUTH_USER_MODEL
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'profile']  # Add other fields like profile_picture if needed
+        fields = ['email', 'profile', 'id']  # Add other fields like profile_picture if needed
 
 class PostSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)  # For reading user details
