@@ -61,15 +61,24 @@ const Comments = ({ postId }) => {
     }
   };
 
+  // Function to generate initials from email
+  const getInitials = (email) => {
+    if (!email) return "";
+    const [name] = email.split("@");
+    const initials = name
+      .split(".")
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
+    return initials;
+  };
+
   return (
     <div className="space-y-4 p-4">
       <div className="write flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
         {currentUser && (
-          <img
-            src={currentUser.profilePicture}
-            alt="profile"
-            className="w-12 h-12 rounded-full object-cover"
-          />
+          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+            {getInitials(currentUser.email)}
+          </div>
         )}
         <input
           type="text"
@@ -95,13 +104,19 @@ const Comments = ({ postId }) => {
           className="bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden"
         >
           <div className="flex items-center p-4 bg-gray-100 border-b border-gray-200">
-            <img
-              src={comment.user.profilePicture}
-              alt="profile"
-              className="w-12 h-12 rounded-full mr-4 object-cover"
-            />
+            {comment.user.profile ? (
+              <img
+                src={comment.user.profile}
+                alt="profile"
+                className="w-12 h-12 rounded-full mr-4 object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                {getInitials(comment.user.email)}
+              </div>
+            )}
             <h2 className="text-lg font-semibold text-gray-800">
-              {comment.user.name}
+              {comment.user.email.split("@")[0]} {/* Display email prefix as profile name */}
             </h2>
           </div>
           <div className="p-4">

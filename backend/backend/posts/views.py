@@ -49,17 +49,16 @@ def post_detail(request, pk):
 
 class CommentListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request, post_id):
         """Retrieve all comments for a specific post."""
         try:
-            # Check if the post exists
             post = get_object_or_404(Post, id=post_id)
             comments = Comment.objects.filter(post=post)
-            serializer = CommentSerializer(comments, many=True)
+            serializer = CommentSerializer(comments, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            # Handle unexpected errors
+            print(f"Error fetching comments: {e}")
             return Response(
                 {'error': 'An error occurred while fetching comments.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -68,21 +67,29 @@ class CommentListCreateView(APIView):
     def post(self, request, post_id):
         """Create a new comment for a specific post."""
         try:
-            # Check if the post exists
             post = get_object_or_404(Post, id=post_id)
-            serializer = CommentSerializer(data=request.data)
+            
+            # Create the serializer with the complete context
+            serializer = CommentSerializer(
+                data={'content': request.data.get('content')},
+                context={
+                    'request': request,
+                    'post': post
+                }
+            )
+            
             if serializer.is_valid():
-                serializer.save(user=request.user, post=post)
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                # Return validation errors
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
         except Exception as e:
-            # Handle unexpected errors
+            print(f"Error creating comment: {e}")  # This will help with debugging
             return Response(
                 {'error': 'An error occurred while creating the comment.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
 
 
 
