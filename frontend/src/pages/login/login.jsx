@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login, loading, error } = useAuth();
+    const { login, loading, error, currentUser } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Debug effect to track currentUser changes
+    useEffect(() => {
+        // console.log('Current User Updated:', currentUser);
+        if (currentUser) {
+            console.log('Navigating to home page');
+            navigate('/');
+        }
+    }, [currentUser, navigate]);
+
     const handleLogin = async (e) => {
-        e.preventDefault(); // Prevent form submission
-        const success = await login(email, password); // Call the login function
-        if (success) {
-            navigate('/'); // Redirect to the homepage on success
+        e.preventDefault(); 
+        try {
+            // console.log('Login Attempt Initiated');
+            // console.log('Credentials:', { email, password });
+            
+            const success = await login(email, password);
+            
+            // console.log('Login Function Return:', success);
+            
+            // If login is successful, currentUser effect will handle navigation
+            if (!success) {
+                console.error('Login explicitly failed');
+            }
+        } catch (err) {
+            console.error('Login process error:', err);
         }
     };
 
@@ -21,7 +41,7 @@ const Login = () => {
             <div className="w-1/2 bg-white p-12 flex flex-col justify-center">
                 <h1 className="text-4xl font-bold text-gray-800 mb-6">Welcome to the Login Page</h1>
                 <p className="text-gray-600 mb-8">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam repudiandae magnam id vero, impedit in minima reiciendis voluptate sed iusto autem quasi exercitationem optio nostrum reprehenderit quod eveniet, deserunt labore.
+                    Login to access your account
                 </p>
                 <div className="flex items-center space-x-4">
                     <span className="text-gray-700">Don't have an account?</span>
