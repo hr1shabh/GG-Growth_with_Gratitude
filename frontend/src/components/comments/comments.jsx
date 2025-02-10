@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/authContext";
+import { SendHorizontal, Loader2 } from 'lucide-react';
 
 const Comments = ({ postId }) => {
   const { currentUser } = useAuth();
@@ -8,120 +9,124 @@ const Comments = ({ postId }) => {
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [posting, setPosting] = useState(false);
 
-  // Fetch comments for the given post
   const fetchComments = async () => {
     setLoading(true);
-    setError(null);
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.get(
         `http://localhost:8000/api/posts/${postId}/comments/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments(response.data);
     } catch (err) {
-      console.error("Error fetching comments:", err);
-      setError("Failed to fetch comments.");
+      setError("Couldn't load comments");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (postId) {
-      fetchComments();
-    }
+    if (postId) fetchComments();
   }, [postId]);
 
-  // Post a new comment
   const postComment = async () => {
     if (!newComment.trim()) return;
+    setPosting(true);
     try {
       const token = localStorage.getItem("access_token");
       await axios.post(
         `http://localhost:8000/api/posts/${postId}/comments/`,
-        { content: newComment }, // Send only the comment content
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { content: newComment },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNewComment(""); // Clear the input field
-      fetchComments();   // Re-fetch comments to update the UI
+      setNewComment("");
+      fetchComments();
     } catch (err) {
-      console.error("Error posting comment:", err.response?.data || err);
-      setError("Failed to post comment.");
+      setError("Failed to post comment");
+    } finally {
+      setPosting(false);
     }
   };
 
-  // Function to generate initials from email
-  const getInitials = (email) => {
+  const getInitials = email => {
     if (!email) return "";
-    const [name] = email.split("@");
-    const initials = name
-      .split(".")
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("");
-    return initials;
+    return email.split("@")[0].charAt(0).toUpperCase();
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      postComment();
+    }
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="write flex items-center space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-        {currentUser && (
-          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+    <div className="space-y-4">
+      {currentUser && (
+        <div className="flex items-start space-x-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium text-sm">
             {getInitials(currentUser.email)}
           </div>
-        )}
-        <input
-          type="text"
-          placeholder="Write a comment"
-          className="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-          onClick={postComment}
-        >
-          Post
-        </button>
-      </div>
-
-      {loading && <p>Loading comments...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {comments.map((comment) => (
-        <div
-          key={comment.id}
-          className="bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden"
-        >
-          <div className="flex items-center p-4 bg-gray-100 border-b border-gray-200">
-            {comment.user.profile ? (
-              <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-              {getInitials(comment.user.profile)}
+          <div className="flex-1">
+            <textarea
+              placeholder="Write a comment..."
+              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg placeholder-gray-400 text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onKeyPress={handleKeyPress}
+              rows={2}
+            />
+            <div className="mt-2 flex justify-between items-center">
+              <span className="text-xs text-gray-400">Press Enter to post</span>
+              <button
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+                onClick={postComment}
+                disabled={!newComment.trim() || posting}
+              >
+                {posting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <span>Post</span>
+                    <SendHorizontal className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </div>
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                {getInitials(comment.user.email)}
-              </div>
-            )}
-            <h2 className="text-lg font-semibold text-gray-800">
-              {comment.user.profile ? comment.user.profile : comment.user.email.split("@")[0]}
-            </h2>
-          </div>
-          <div className="p-4">
-            <p className="text-gray-600">{comment.content}</p>
           </div>
         </div>
-      ))}
+      )}
+
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-4 text-red-500">{error}</div>
+      ) : (
+        <div className="space-y-4">
+          {comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="flex space-x-3 animate-fadeIn"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium text-sm">
+                {getInitials(comment.user.profile || comment.user.email)}
+              </div>
+              <div className="flex-1">
+                <div className="bg-white rounded-lg px-4 py-3 shadow-sm">
+                  <div className="font-medium text-gray-900 mb-1">
+                    {comment.user.profile || comment.user.email.split("@")[0]}
+                  </div>
+                  <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
