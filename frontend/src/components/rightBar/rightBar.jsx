@@ -9,18 +9,14 @@ const RightBar = () => {
   const getGratitudeSuggestion = async () => {
     setIsLoading(true);
     setError(null);
-
-    // Debug log to check if API key exists
-    console.log("API Key available:", !!process.env.REACT_APP_GROQ_API_KEY);
+    setSuggestion(''); // Clear previous suggestion
 
     try {
-      // Initialize Groq client with API key
       const groq = new Groq({
         apiKey: process.env.REACT_APP_GROQ_API_KEY,
         dangerouslyAllowBrowser: true
       });
 
-      // Main request
       const chatCompletion = await groq.chat.completions.create({
         messages: [
           {
@@ -44,65 +40,51 @@ const RightBar = () => {
       for await (const chunk of chatCompletion) {
         const content = chunk.choices[0]?.delta?.content || '';
         fullResponse += content;
-        // Optional: Uncomment to update suggestion incrementally
-        // setSuggestion(fullResponse);
       }
       setSuggestion(fullResponse.trim());
     } catch (error) {
       console.error('Error fetching suggestion:', error);
-
-      // Enhanced error handling with detailed messages
-      let errorMessage = 'Failed to fetch suggestion. Please try again.';
-      
-      if (error.response) {
-        errorMessage = `API Error ${error.response.status}: ${error.response.data?.error || error.response.statusText || 'Unknown error'}`;
-      } else if (error.request) {
-        errorMessage = "No response received from API. Please check your network connection.";
-      } else if (error.code === 'ERR_NETWORK') {
-        errorMessage = "Network error. Please check your internet connection.";
-      } else if (error.message && error.message.includes('API key')) {
-        errorMessage = "API key error. Please check your API key configuration.";
-      } else if (error.message) {
-        errorMessage = `Error: ${error.message}`;
-      }
-      
-      setError(errorMessage);
+      setError('Failed to fetch suggestion. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="w-72 bg-white shadow-md h-screen sticky top-0 overflow-y-auto right-0 p-4">
-      <div className="space-y-6">
-        {/* Gratitude Suggestion Section */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <span className="text-lg font-semibold text-gray-800 block mb-4">
-            Daily Gratitude
-          </span>
+  const buttonText = isLoading
+    ? 'Generating...'
+    : error
+    ? 'Try Again'
+    : suggestion
+    ? 'Get Another Prompt'
+    : 'Get Prompt';
 
+  return (
+    <div className="w-72 bg-gray-100 shadow-md h-screen sticky top-0 overflow-y-auto right-0 p-6">
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg p-4">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Today's Gratitude Prompt
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Discover a thought-provoking question to inspire your gratitude reflection.
+          </p>
           <button
             onClick={getGratitudeSuggestion}
             disabled={isLoading}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+            className={`w-full py-2 px-4 rounded-lg transition-colors ${
+              isLoading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+            } text-white`}
           >
-            {isLoading ? 'Generating...' : 'Get Writing Prompt'}
+            {buttonText}
           </button>
-
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
               <p>{error}</p>
-              {!process.env.REACT_APP_GROQ_API_KEY && (
-                <p className="mt-1 text-sm">
-                  Note: REACT_APP_GROQ_API_KEY is not defined. Make sure you've set it up correctly.
-                </p>
-              )}
             </div>
           )}
-
           {suggestion && (
-            <div className="mt-4 p-3 bg-white rounded-lg shadow">
-              <p className="text-gray-700">{suggestion}</p>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-gray-800 text-lg">{suggestion}</p>
             </div>
           )}
         </div>
