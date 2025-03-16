@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  backend:
+    build: ./backend
+    command: bash -c "python backend/manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --chdir backend"
+    environment:
+      DATABASE_URL: postgresql://neondb_owner:npg_d16gfahbspFc@ep-empty-art-a16lpcmj-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require  # Replace with your Neon URL
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
