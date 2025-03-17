@@ -26,7 +26,7 @@ const CreatePost = ({ fetchPosts }) => {
     setError('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/posts/', {
+      const response = await fetch('https://my-django-app-vpvk.onrender.com/api/posts/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ const Comments = ({ postId }) => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.get(
-        `http://localhost:8000/api/posts/${postId}/comments/`,
+        `https://my-django-app-vpvk.onrender.com/api/posts/${postId}/comments/`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments(response.data);
@@ -37,7 +37,7 @@ const Comments = ({ postId }) => {
     try {
       const token = localStorage.getItem("access_token");
       await axios.post(
-        `http://localhost:8000/api/posts/${postId}/comments/`,
+        `https://my-django-app-vpvk.onrender.com/api/posts/${postId}/comments/`,
         { content: newComment },
         { headers: { Authorization: `Bearer ${token}` } }
       );

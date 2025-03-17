@@ -15,7 +15,7 @@ const Post = ({ post }) => {
       const token = localStorage.getItem("access_token");
       if (!token) return;
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+        const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/posts/${post.id}/like/`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch like status');
@@ -37,7 +37,7 @@ const Post = ({ post }) => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+      const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/posts/${post.id}/like/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

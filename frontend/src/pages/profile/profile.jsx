@@ -21,7 +21,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/users/userprofile/${id}/`, {
+                const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/users/userprofile/${id}/`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch profile');
@@ -39,7 +39,7 @@ const Profile = () => {
     const fetchUserPosts = async () => {
         try {
             if (!token) throw new Error("User is not authenticated");
-            const response = await fetch("http://127.0.0.1:8000/api/posts/", {
+            const response = await fetch("https://my-django-app-vpvk.onrender.com/api/posts/", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch posts');

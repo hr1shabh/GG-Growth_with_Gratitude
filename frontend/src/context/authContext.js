@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     
         try {
             // Call the backend `/api/token/` endpoint to get JWT tokens
-            const response = await fetch("http://localhost:8000/api/token/", {
+            const response = await fetch("https://my-django-app-vpvk.onrender.com/api/token/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("refresh_token", data.refresh);
     
             // Fetch user profile using the access token
-            const profileResponse = await fetch("http://localhost:8000/api/users/profile/", {
+            const profileResponse = await fetch("https://my-django-app-vpvk.onrender.com/api/users/profile/", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${data.access}`,
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     
         try {
             // Call the backend `/api/register/` endpoint to create a new user
-            const response = await fetch("http://localhost:8000/api/users/register/", {
+            const response = await fetch("https://my-django-app-vpvk.onrender.com/api/users/register/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
         const accessToken = localStorage.getItem("access_token");
         if (accessToken) {
             // Fetch user profile if a token exists
-            fetch("http://localhost:8000/api/users/profile/", {
+            fetch("https://my-django-app-vpvk.onrender.com/api/users/profile/", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
