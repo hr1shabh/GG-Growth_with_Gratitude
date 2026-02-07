@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(errorData.detail || "Registration failed");
             }
 
-            const data = await response.json();
+            await response.json();
 
             // Optionally, you can automatically log in the user after registration
             // by calling the login function here

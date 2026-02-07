@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/authContext";
 import { SendHorizontal, Loader2 } from 'lucide-react';
+import API_BASE_URL from "../../apiConfig";
 
 const Comments = ({ postId }) => {
   const { currentUser } = useAuth();
@@ -11,12 +12,12 @@ const Comments = ({ postId }) => {
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
 
-  const fetchComments = async () => {
+  const fetchComments = React.useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.get(
-        `https://my-django-app-vpvk.onrender.com/api/posts/${postId}/comments/`,
+        `${API_BASE_URL}/api/posts/${postId}/comments/`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments(response.data);
@@ -25,11 +26,11 @@ const Comments = ({ postId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId]);
 
   useEffect(() => {
     if (postId) fetchComments();
-  }, [postId]);
+  }, [postId, fetchComments]);
 
   const postComment = async () => {
     if (!newComment.trim()) return;

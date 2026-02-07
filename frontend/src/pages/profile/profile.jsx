@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import Posts from '../../components/posts/posts';
-import { UserCircle2, Loader2, Users, Calendar, Mail, MapPin, Link as LinkIcon } from 'lucide-react';
+import { UserCircle2, Loader2, Users, Calendar, Mail } from 'lucide-react';
+import API_BASE_URL from '../../apiConfig';
 
 const Profile = () => {
     const { id } = useParams();
@@ -15,31 +16,32 @@ const Profile = () => {
     const [postsError, setPostsError] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
     const [activeTab, setActiveTab] = useState('posts');
-    
+
     const token = localStorage.getItem("access_token");
 
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/users/userprofile/${id}/`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!response.ok) throw new Error('Failed to fetch profile');
-                const data = await response.json();
-                setProfileUser(data);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchUserProfile();
+    const fetchUserProfile = React.useCallback(async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/users/userprofile/${id}/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch profile');
+            const data = await response.json();
+            setProfileUser(data);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setIsLoading(false);
+        }
     }, [id, token]);
 
-    const fetchUserPosts = async () => {
+    useEffect(() => {
+        fetchUserProfile();
+    }, [fetchUserProfile]);
+
+    const fetchUserPosts = React.useCallback(async () => {
         try {
             if (!token) throw new Error("User is not authenticated");
-            const response = await fetch("https://my-django-app-vpvk.onrender.com/api/posts/", {
+            const response = await fetch(`${API_BASE_URL}/api/posts/`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch posts');
@@ -50,11 +52,11 @@ const Profile = () => {
         } finally {
             setPostsLoading(false);
         }
-    };
+    }, [id, token]);
 
     useEffect(() => {
         fetchUserPosts();
-    }, [id, token]);
+    }, [fetchUserPosts]);
 
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-screen">
@@ -115,7 +117,7 @@ const Profile = () => {
                                         </h1>
                                         <p className="text-gray-500 mt-1">@{profileUser.email.split('@')[0]}</p>
                                     </div>
-                                    
+
                                     <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600">
                                         <div className="flex items-center gap-2">
                                             <Mail className="w-4 h-4 text-gray-400" />
@@ -185,10 +187,10 @@ const Profile = () => {
 
                             <div className="p-6">
                                 {activeTab === 'posts' ? (
-                                    <Posts 
-                                        posts={posts} 
-                                        loading={postsLoading} 
-                                        error={postsError} 
+                                    <Posts
+                                        posts={posts}
+                                        loading={postsLoading}
+                                        error={postsError}
                                     />
                                 ) : (
                                     <div className="space-y-6">

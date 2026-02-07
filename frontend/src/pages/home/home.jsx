@@ -10,7 +10,7 @@ const Home = () => {
     const token = localStorage.getItem("access_token");
 
     // Function to fetch posts
-    const fetchPosts = async () => {
+    const fetchPosts = React.useCallback(async () => {
         try {
             if (!token) {
                 throw new Error("User is not authenticated");
@@ -34,12 +34,12 @@ const Home = () => {
         } finally {
             setLoading(false); // Set loading to false
         }
-    };
+    }, [token]);
 
     // Fetch posts when the component mounts
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [fetchPosts]);
 
     return (
         <div>
