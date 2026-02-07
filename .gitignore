@@ -1,11 +1,36 @@
-node_modules/
-backend/venv/
-backend/db.sqlite3
-backend/.env
-frontend/.env
+# General
 .DS_Store
-frontend/node_modules/
-backend/backend/.env
+.AppleDouble
+.LSOverride
+Thumbs.db
+node_modules/
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+!.env.example
 
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+static/
 
+# React
+/build/
+/coverage
+.pnp
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database / Docker
 db/data/

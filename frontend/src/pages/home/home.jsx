@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../apiConfig';
 import Posts from '../../components/posts/posts';
 import CreatePost from '../../components/createPost/createPost';
 
@@ -15,7 +16,7 @@ const Home = () => {
                 throw new Error("User is not authenticated");
             }
 
-            const response = await fetch("https://my-django-app-vpvk.onrender.com/api/posts/", {
+            const response = await fetch(`${API_BASE_URL}/api/posts/`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,

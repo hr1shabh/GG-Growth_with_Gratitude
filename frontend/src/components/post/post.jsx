@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../apiConfig';
 import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Share2, Loader2 } from 'lucide-react';
 import Comments from '../comments/comments';
@@ -15,7 +16,7 @@ const Post = ({ post }) => {
       const token = localStorage.getItem("access_token");
       if (!token) return;
       try {
-        const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/posts/${post.id}/like/`, {
+        const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/like/`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch like status');
@@ -37,7 +38,7 @@ const Post = ({ post }) => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`https://my-django-app-vpvk.onrender.com/api/posts/${post.id}/like/`, {
+      const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/like/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,13 +57,13 @@ const Post = ({ post }) => {
   };
 
   const getInitial = email => email?.[0]?.toUpperCase() || '?';
-  
+
   const formatDate = dateString => {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now - date;
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       if (hours === 0) {
@@ -72,7 +73,7 @@ const Post = ({ post }) => {
       return `${hours}h ago`;
     }
     if (days < 7) return `${days}d ago`;
-    
+
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric'
@@ -89,7 +90,7 @@ const Post = ({ post }) => {
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden max-w-2xl mx-auto my-6 border border-gray-100">
       {/* Header */}
       <div className="p-4 flex items-center justify-between">
-        <Link to={`/profile/${post.user.id}`} 
+        <Link to={`/profile/${post.user.id}`}
           className="flex items-center space-x-3 group">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold transform group-hover:scale-105 transition-transform">
             {getInitial(post.user.email)}
@@ -117,13 +118,13 @@ const Post = ({ post }) => {
       {/* Interaction Bar */}
       <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
         <div className="flex space-x-6">
-          <button 
+          <button
             onClick={handleLikeToggle}
             disabled={isLoading}
             className="group flex items-center space-x-2"
           >
             <div className="relative">
-              <Heart 
+              <Heart
                 className={`w-6 h-6 transition-all duration-300 transform group-hover:scale-110 
                   ${isLiked ? 'fill-rose-500 text-rose-500' : 'text-gray-500 group-hover:text-rose-500'}`}
                 strokeWidth={2}
@@ -137,20 +138,20 @@ const Post = ({ post }) => {
             </span>
           </button>
 
-          <button 
+          <button
             onClick={() => setIsCommented(!isCommented)}
             className="group flex items-center space-x-2"
           >
-            <MessageCircle 
-              className="w-6 h-6 text-gray-500 group-hover:text-blue-500 transition-colors" 
+            <MessageCircle
+              className="w-6 h-6 text-gray-500 group-hover:text-blue-500 transition-colors"
               strokeWidth={2}
             />
             <span className="text-sm text-gray-500 group-hover:text-blue-500">Comment</span>
           </button>
 
           <button className="group flex items-center space-x-2">
-            <Share2 
-              className="w-6 h-6 text-gray-500 group-hover:text-green-500 transition-colors" 
+            <Share2
+              className="w-6 h-6 text-gray-500 group-hover:text-green-500 transition-colors"
               strokeWidth={2}
             />
             <span className="text-sm text-gray-500 group-hover:text-green-500">Share</span>
