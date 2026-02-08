@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Loader2, SendHorizontal, AlertCircle } from 'lucide-react';
+import API_BASE_URL from '../../apiConfig';
 
 const CreatePost = ({ fetchPosts }) => {
   const [points, setPoints] = useState(['', '', '']);
@@ -26,7 +27,7 @@ const CreatePost = ({ fetchPosts }) => {
     setError('');
 
     try {
-      const response = await fetch('https://my-django-app-vpvk.onrender.com/api/posts/', {
+      const response = await fetch(`${API_BASE_URL}/api/posts/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ const CreatePost = ({ fetchPosts }) => {
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             Share your thoughts
           </h3>
-          
+
           <div className="space-y-4">
             {points.map((point, index) => (
               <div key={index} className="relative">
@@ -95,7 +96,7 @@ const CreatePost = ({ fetchPosts }) => {
               disabled={!areAllPointsFilled || !token || loading}
               className={`w-full flex items-center justify-center space-x-2 
                 py-3 px-4 rounded-lg font-medium transition-all duration-200
-                ${!areAllPointsFilled || !token 
+                ${!areAllPointsFilled || !token
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow'}`}
             >

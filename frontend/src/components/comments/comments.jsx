@@ -38,7 +38,7 @@ const Comments = ({ postId }) => {
     try {
       const token = localStorage.getItem("access_token");
       await axios.post(
-        `https://my-django-app-vpvk.onrender.com/api/posts/${postId}/comments/`,
+        `${API_BASE_URL}/api/posts/${postId}/comments/`,
         { content: newComment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
