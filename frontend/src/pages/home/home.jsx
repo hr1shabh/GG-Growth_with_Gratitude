@@ -47,7 +47,7 @@ const Home = () => {
             <CreatePost fetchPosts={fetchPosts} />
 
             {/* Pass posts, loading, and error to Posts */}
-            <Posts posts={posts} loading={loading} error={error} />
+            <Posts posts={posts} loading={loading} error={error} onPostDeleted={fetchPosts} />
         </div>
     );
 };

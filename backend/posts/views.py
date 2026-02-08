@@ -25,6 +25,7 @@ def post_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def post_detail(request, pk):
     try:
         post = Post.objects.get(pk=pk)
@@ -43,6 +44,11 @@ def post_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
+        if post.user != request.user:
+            return Response(
+                {'error': 'You can only delete your own posts'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -92,6 +98,21 @@ class CommentListCreateView(APIView):
 
 
 
+class CommentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, post_id, comment_id):
+        """Delete a comment (only by the comment owner)."""
+        comment = get_object_or_404(Comment, id=comment_id, post_id=post_id)
+        
+        if comment.user != request.user:
+            return Response(
+                {'error': 'You can only delete your own comments'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class LikePostView(APIView):

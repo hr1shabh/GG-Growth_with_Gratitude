@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../apiConfig';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Share2, Loader2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Loader2, Trash2, X, Check } from 'lucide-react';
 import Comments from '../comments/comments';
+import { useAuth } from '../../context/authContext';
 
-const Post = ({ post }) => {
+const Post = ({ post, onPostDeleted }) => {
+  const { currentUser } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [isCommented, setIsCommented] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+
+  const isOwner = currentUser && post && currentUser.id === post.user.id;
 
   useEffect(() => {
     if (!post) return;
@@ -54,6 +60,49 @@ const Post = ({ post }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert('Please log in to delete posts.');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/posts/${post.id}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete post');
+      if (onPostDeleted) {
+        onPostDeleted();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete post. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleDeleteCancel = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShowDeleteConfirm(false);
   };
 
   const getInitial = email => email?.[0]?.toUpperCase() || '?';
@@ -102,6 +151,45 @@ const Post = ({ post }) => {
             <span className="text-xs text-gray-500">{formatDate(post.created_at)}</span>
           </div>
         </Link>
+
+        {/* Delete Button - Only visible to post owner */}
+        {isOwner && (
+          <div className="flex items-center space-x-2">
+            {showDeleteConfirm ? (
+              <>
+                <span className="text-sm text-gray-500">Delete?</span>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={isDeleting}
+                  className="p-1.5 text-white bg-red-500 hover:bg-red-600 rounded-full transition-all duration-200"
+                  title="Confirm delete"
+                >
+                  {isDeleting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                </button>
+                <button
+                  onClick={handleDeleteCancel}
+                  disabled={isDeleting}
+                  className="p-1.5 text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-full transition-all duration-200"
+                  title="Cancel"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleDeleteClick}
+                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200"
+                title="Delete post"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Content */}

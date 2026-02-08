@@ -1,7 +1,7 @@
 import React from 'react';
 import Post from '../post/post';
 
-const Posts = ({ posts, loading, error }) => {
+const Posts = ({ posts, loading, error, onPostDeleted }) => {
     // Display loading state
     if (loading) {
         return <div>Loading...</div>;
@@ -16,7 +16,7 @@ const Posts = ({ posts, loading, error }) => {
     return (
         <div className="posts">
             {posts.map((post) => (
-                <Post post={post} key={post.id} />
+                <Post post={post} key={post.id} onPostDeleted={onPostDeleted} />
             ))}
         </div>
     );
