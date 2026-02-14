@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
-import { Menu, Search, X } from 'lucide-react';
+import { Menu, Search, X, Flame } from 'lucide-react';
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
@@ -39,6 +39,16 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             {currentUser ? (
               <>
+                {/* Streak Display */}
+                <div className="flex items-center space-x-1 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100" title="Daily Streak">
+                  <Flame
+                    className={`h-5 w-5 ${currentUser.streak > 0 ? 'text-orange-500 fill-orange-500' : 'text-gray-400'}`}
+                  />
+                  <span className={`font-bold ${currentUser.streak > 0 ? 'text-gray-800' : 'text-gray-400'}`}>
+                    {currentUser.streak || 0}
+                  </span>
+                </div>
+
                 <div className="relative group">
                   <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-full font-bold text-lg cursor-pointer transform hover:scale-105 transition-all duration-200">
                     {currentUser.email.charAt(0).toUpperCase()}
