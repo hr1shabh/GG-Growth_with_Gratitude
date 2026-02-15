@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import Posts from '../../components/posts/posts';
-import { UserCircle2, Loader2, Users, Calendar, Mail } from 'lucide-react';
+import { UserCircle2, Loader2, Mail } from 'lucide-react';
 import API_BASE_URL from '../../apiConfig';
 
 const Profile = () => {
@@ -122,14 +122,6 @@ const Profile = () => {
                                         <div className="flex items-center gap-2">
                                             <Mail className="w-4 h-4 text-gray-400" />
                                             <span>{profileUser.email}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Users className="w-4 h-4 text-gray-400" />
-                                            <span>123 followers</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-gray-400" />
-                                            <span>Joined {new Date().getFullYear()}</span>
                                         </div>
                                     </div>
 

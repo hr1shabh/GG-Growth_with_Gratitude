@@ -49,11 +49,13 @@ const Navbar = () => {
                   </span>
                 </div>
 
-                <div className="relative group">
-                  <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-full font-bold text-lg cursor-pointer transform hover:scale-105 transition-all duration-200">
-                    {currentUser.email.charAt(0).toUpperCase()}
+                <Link to={`/profile/${currentUser.id}`}>
+                  <div className="relative group">
+                    <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-full font-bold text-lg cursor-pointer transform hover:scale-105 transition-all duration-200">
+                      {currentUser.email.charAt(0).toUpperCase()}
+                    </div>
                   </div>
-                </div>
+                </Link>
                 <button
                   onClick={logout}
                   className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-lg hover:from-rose-600 hover:to-pink-600 transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50"
