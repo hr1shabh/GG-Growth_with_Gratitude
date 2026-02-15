@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../apiConfig';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Share2, Loader2, Trash2, X, Check } from 'lucide-react';
+import { Heart, MessageCircle, Loader2, Trash2, X, Check } from 'lucide-react';
 import Comments from '../comments/comments';
 import { useAuth } from '../../context/authContext';
 
@@ -237,13 +237,7 @@ const Post = ({ post, onPostDeleted }) => {
             <span className="text-sm text-gray-500 group-hover:text-blue-500">Comment</span>
           </button>
 
-          <button className="group flex items-center space-x-2">
-            <Share2
-              className="w-6 h-6 text-gray-500 group-hover:text-green-500 transition-colors"
-              strokeWidth={2}
-            />
-            <span className="text-sm text-gray-500 group-hover:text-green-500">Share</span>
-          </button>
+
         </div>
       </div>
 
