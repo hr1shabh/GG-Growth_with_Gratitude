@@ -1,101 +1,134 @@
+# GG - Growth with Gratitude
+
+GG is a full-stack social media application designed to foster personal growth and gratitude. It allows users to share posts, interact with a community, and track their daily posting consistency with a streak feature.
 
 
-## Backend APIs
+## Features
 
-### User APIs
+### Core Social Features
+-   **User Authentication**: Secure Sign Up and Login using JWT (JSON Web Tokens).
+-   **Social Feed**: View posts from all users in a dynamic feed.
+-   **Create Posts**: Share your thoughts and gratitude with the community. (Supports text content).
+-   **Interactions**:
+    -   **Like** posts to show appreciation.
+    -   **Comment** on posts to engage in discussions.
+    -   **Delete** your own posts.
+-   **User Profiles**: View user profiles and their post history.
+-   **Follow System**: Follow other users (UI prepared, backend supported).
 
-1. User Registration
+### Gamification
+-   **Daily Streak**: A dedicated streak counter in the Navbar tracks how many consecutive days you've posted.
+    -   🔥 **Orange Fire**: You are on a roll! (Streak > 0)
+    -   🌑 **Gray Fire**: Start posting to build your streak!
 
-POST api/users/register/
+## 🛠 Tech Stack
 
-{
-  "email": "user@example.com",
-  "password": "securepassword123",
-  "profile": "Optional profile text"
-}
+### Backend
+-   **Framework**: Django 5.1 & Django Rest Framework (DRF)
+-   **Language**: Python 3.10+
+-   **Database**: PostgreSQL (Production) / SQLite (Dev)
+-   **Authentication**: Simple JWT
+-   **Containerization**: Docker
 
-2. Token Generation (Login)
+### Frontend
+-   **Framework**: React 19
+-   **Styling**: Tailwind CSS
+-   **Icons**: Lucide React
+-   **HTTP Client**: Fetch API
 
-POST /api/token/
+### DevOps & Deployment
+-   **CI/CD**: GitHub Actions (Automated Backend Builds)
+-   **Registry**: Docker Hub
+-   **Hosting**:
+    -   **Frontend**: Vercel (Recommended)
+    -   **Backend**: Render (Docker web service)
 
-{
-    "username": "testuser",
-    "password": "password123"
-}
+## 🏃‍♂️ Getting Started
 
+### Prerequisites
+-   Node.js & npm
+-   Python 3.10+
+-   Docker (optional, for containerized run)
 
-3. Token Refresh
+### 1. Clone the Repository
+```bash
+git clone https://github.com/hr1shabh/GG-Growth_with_Gratitude.git
+cd GG-Growth_with_Gratitude
+```
 
-POST /api/token/refresh/
+### 2. Backend Setup
+```bash
+cd backend
 
-{
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
+# Install dependencies
+pip install -r requirements.txt
 
-4. User Profile
+# Run migrations
+python manage.py migrate
 
-GET /api/users/profile/
+# Start server
+python manage.py runserver
+```
+*Backend runs on `http://localhost:8000`*
 
-Headers:
+### 3. Frontend Setup
+```bash
+cd frontend
 
-Authorization: Bearer <access_token>
+# Install dependencies
+npm install
 
---- 
+# Start development server
+npm start
+```
+*Frontend runs on `http://localhost:3000`*
 
-### Post APIs
+## 🐳 Docker Support
 
-1. Create a Post
+Build and run the backend using Docker:
 
-POST /api/posts/
+```bash
+cd backend
+docker build -t my-django-app .
+docker run -p 8000:8000 my-django-app
+```
 
+## 🧪 Running Tests
 
-2. Fetch All Posts
+Run the backend unit tests (including the Streak feature logic):
 
-GET /api/posts/
+```bash
+cd backend
+# Use SQLite for faster local testing
+DATABASE_URL=sqlite:///db.sqlite3 python manage.py test users.tests_streak
+```
 
+## 📚 API Reference
 
-3. Fetch a Single Post
+**Auth**
+-   `POST /api/users/register/` - Register new user
+-   `POST /api/token/` - Login (Get Token)
+-   `POST /api/token/refresh/` - Refresh Token
 
-GET /api/posts/<post_id>/
+**Posts**
+-   `GET /api/posts/` - Get all posts
+-   `POST /api/posts/` - Create post
+-   `DELETE /api/posts/<id>/` - Delete post
 
-4. Update a Post
+**Interactions**
+-   `POST /api/posts/<id>/like/` - Like post
+-   `POST /api/posts/<id>/comments/` - Add comment
 
-PUT /api/posts/<post_id>/
+## 🤝 Contributing
+1.  Fork the repository.
+2.  Create a feature branch (`git checkout -b feature/amazing-feature`).
+3.  Commit your changes.
+4.  Push to the branch.
+5.  Open a Pull Request.
 
-5. Delete a Post
-
-DELETE /api/posts/<post_id>/
-
----
-
-### Comment APIs
-
-1. Create a Comment
-
-POST /api/posts/<post_id>/comments/
-
-2. Fetch Comments of a Post
-
-GET /api/posts/<post_id>/comments/
-
----
-
-### Like APIs
-
-1. Like a Post
-
-POST /api/posts/<post_id>/like/
-
-2. Unlike a Post
-
-DELETE /api/posts/<post_id>/like/
-
-3. Get Likes Count for a Post
-
-GET /api/posts/<post_id>/like/
-
-
----
-
-![alt text](basic_flow.png)
+## 📄 License
+This project is open source.
