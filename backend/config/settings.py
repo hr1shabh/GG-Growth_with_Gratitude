@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gok)#^xv_8mpmaz&4=la9d=bcj2z-^+ia)^^%pqwx2enof)j1l'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-gok)#^xv_8mpmaz&4=la9d=bcj2z-^+ia)^^%pqwx2enof)j1l')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -44,8 +44,45 @@ INSTALLED_APPS = [
     'users',
     'posts',
     'rest_framework',
-    'corsheaders'
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'corsheaders',
+
+
+    'dj_rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
+    'allauth.socialaccount.providers.google',
 ]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Allauth Configuration
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*'] # Replaces email/username required
+ACCOUNT_LOGIN_METHODS = {'email'} # Replaces authentication method
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# dj-rest-auth Configuration
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
+    'JWT_AUTH_HTTPONLY': False,
+    'TOKEN_MODEL': None,
+}
+# Keep old settings for compatibility with older dj-rest-auth logic if present
+REST_USE_JWT = True
+REST_AUTH_TOKEN_MODEL = None
+REST_SESSION_LOGIN = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -82,20 +120,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ggDB',
-#         'USER': 'gg',
-#         'PASSWORD': 'gg',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 load_dotenv()
-
-
-print(os.getenv('DATABASE_URL'))
 
 DATABASES = {
     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -145,7 +170,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000,https://gg-growth-with-gratitude.vercel.app').split(',')
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -157,18 +199,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 1 hour
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # 1 week
-    
-    # Optional additional settings
-    'ROTATE_REFRESH_TOKENS': True,  # Generate new refresh token when refreshing access token
-    'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens after rotation
-    
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key',  # Use your Django SECRET_KEY or a separate key
-    
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
 }

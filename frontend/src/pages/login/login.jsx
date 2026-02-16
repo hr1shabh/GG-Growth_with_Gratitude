@@ -1,33 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login, loading, error, currentUser } = useAuth();
+    const { login, googleLogin, loading, error, currentUser } = useAuth();
+
+    const loginToGoogle = useGoogleLogin({
+        onSuccess: codeResponse => googleLogin(codeResponse.code),
+        flow: 'auth-code',
+    });
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // Debug effect to track currentUser changes
     useEffect(() => {
-        // console.log('Current User Updated:', currentUser);
         if (currentUser) {
-            console.log('Navigating to home page');
             navigate('/');
         }
     }, [currentUser, navigate]);
 
     const handleLogin = async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         try {
-            // console.log('Login Attempt Initiated');
-            // console.log('Credentials:', { email, password });
-            
             const success = await login(email, password);
-            
-            // console.log('Login Function Return:', success);
-            
-            // If login is successful, currentUser effect will handle navigation
             if (!success) {
                 console.error('Login explicitly failed');
             }
@@ -83,6 +79,26 @@ const Login = () => {
                             {loading ? 'Logging in...' : 'Login'}
                         </button>
                     </form>
+
+                    <div className="mt-6">
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-blue-50 text-gray-500">Or continue with</span>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => loginToGoogle()}
+                            type="button"
+                            className="mt-6 w-full flex items-center justify-center gap-3 bg-white text-gray-700 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition duration-300 shadow-sm hover:shadow-md"
+                        >
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="h-5 w-5" alt="Google" />
+                            Sign in with Google
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

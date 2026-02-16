@@ -9,6 +9,10 @@ from rest_framework.permissions import AllowAny
 
 User = get_user_model()  # Added this line
 
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
@@ -39,3 +43,10 @@ def get_user_by_id(request, user_id):
         return Response(serializer.data)
     except User.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+class GoogleLogin(SocialLoginView):
+    permission_classes = [AllowAny]
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "postmessage"
+    client_class = OAuth2Client
+
