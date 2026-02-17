@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "groq-sdk": "^0.15.0",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

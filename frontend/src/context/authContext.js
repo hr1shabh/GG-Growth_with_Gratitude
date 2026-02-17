@@ -104,6 +104,56 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const googleLogin = async (code) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/users/google/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ code }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Google Login failed");
+            }
+
+            const data = await response.json();
+
+            const accessToken = data.access || data.key;
+            const refreshToken = data.refresh;
+
+            localStorage.setItem("access_token", accessToken);
+            if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+
+            // Fetch user profile
+            const profileResponse = await fetch(`${API_BASE_URL}/api/users/profile/`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!profileResponse.ok) throw new Error("Failed to fetch user profile");
+
+            const userData = await profileResponse.json();
+            setCurrentUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+
+            return true;
+        } catch (err) {
+            setError(err.message);
+            console.error("Google Login error:", err);
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const logout = () => {
         // Clear tokens and user data from localStorage
         localStorage.removeItem("access_token");
@@ -118,6 +168,7 @@ export const AuthProvider = ({ children }) => {
         // Optionally, you can check for an existing token on app load
         const accessToken = localStorage.getItem("access_token");
         if (accessToken) {
+            // All tokens are now JWT (Bearer)
             // Fetch user profile if a token exists
             fetch(`${API_BASE_URL}/api/users/profile/`, {
                 method: "GET",
@@ -142,7 +193,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ currentUser, login, logout, register, loading, error }}>
+        <AuthContext.Provider value={{ currentUser, login, googleLogin, logout, register, loading, error }}>
             {children}
         </AuthContext.Provider>
     );
