@@ -7,6 +7,7 @@ GG is a full-stack social media application designed to foster personal growth a
 
 ### Core Social Features
 -   **User Authentication**: Secure Sign Up and Login using JWT (JSON Web Tokens).
+-   **Google OAuth 2.0**: Seamlessly sign in or register with your Google account.
 -   **Social Feed**: View posts from all users in a dynamic feed.
 -   **Create Posts**: Share your thoughts and gratitude with the community. (Supports text content).
 -   **Interactions**:
@@ -25,9 +26,9 @@ GG is a full-stack social media application designed to foster personal growth a
 
 ### Backend
 -   **Framework**: Django 5.1 & Django Rest Framework (DRF)
--   **Language**: Python 3.10+
+-   **Language**: Python 3.13+
 -   **Database**: PostgreSQL (Production) / SQLite (Dev)
--   **Authentication**: Simple JWT
+-   **Authentication**: Simple JWT + dj-rest-auth & django-allauth (for Social Auth)
 -   **Containerization**: Docker
 
 ### Frontend
@@ -42,6 +43,25 @@ GG is a full-stack social media application designed to foster personal growth a
 -   **Hosting**:
     -   **Frontend**: Vercel (Recommended)
     -   **Backend**: Render (Docker web service)
+
+## 🔑 Environment Variables
+
+The application requires the following environment variables. Create a `.env` file in the root and relevant subdirectories.
+
+### Backend (`/backend/.env`)
+```bash
+DJANGO_SECRET_KEY=your_secret_key
+DATABASE_URL=postgres://user:password@host:port/db
+GOOGLE_CLIENT_ID=your_google_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_secret
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://your-vercel-app.vercel.app
+```
+
+### Frontend (`/frontend/.env`)
+```bash
+REACT_APP_GOOGLE_CLIENT_ID=your_google_id.apps.googleusercontent.com
+REACT_APP_API_BASE_URL=https://your-backend.onrender.com
+```
 
 ## 🏃‍♂️ Getting Started
 
@@ -113,6 +133,9 @@ DATABASE_URL=sqlite:///db.sqlite3 python manage.py test users.tests_streak
 -   `POST /api/users/register/` - Register new user
 -   `POST /api/token/` - Login (Get Token)
 -   `POST /api/token/refresh/` - Refresh Token
+-   `POST /api/users/google/` - Google OAuth Exchange (Social Login)
+-   `GET /api/users/profile/` - Get current user profile
+-   `GET /accounts/` - Django-allauth endpoints (Social Auth UI)
 
 **Posts**
 -   `GET /api/posts/` - Get all posts
